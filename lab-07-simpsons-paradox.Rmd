@@ -104,8 +104,19 @@ Whickham %>%
 
 ```{r}
 Whickham %>%
-  count(smoker, outcome)
+  ggplot(aes(y = outcome, fill = smoker)) +
+  geom_bar(position = "fill") +
+  labs(title = "Distribution of Outcome")
 ```
+
+```{r}
+Whickham %>%
+  count(smoker, outcome) %>%
+  group_by(smoker) %>%
+  mutate(prop.dead = n/sum(n))
+```
+
+***This is not what I expected at all. According to the visualizations, it seems that smokers have better health than non-smokers!***
 
 6.  Create a new variable called `age_cat` using the following scheme:
 
@@ -113,11 +124,28 @@ Whickham %>%
 -   `age > 44 & age <= 64 ~ "45-64"`
 -   `age > 64 ~ "65+"`
 
+```{r}
+Whickham = Whickham %>%
+  mutate(age_cat = cut(age, breaks = c(0, 44, 64, 85), labels = c("18-44", "45-64", "65+")))
+```
+
 7.  Re-create the visualization depicting the relationship between smoking status and health outcome, faceted by `age_cat`. What changed? What might explain this change? Extend the contingency table from earlier by breaking it down by age category and use it to help your narrative.
 
-```{r, eval = FALSE}
+```{r}
 Whickham %>%
-  count(smoker, age_cat, outcome)
+  ggplot(aes(y = outcome, fill = smoker)) +
+  geom_bar(position = "fill") +
+  facet_wrap(~age_cat) +
+  labs(title = "Distribution of Outcome")
+```
+
+***According to the plot, there are more dead smokers and alive smokers in each age category***
+
+```{r}
+Whickham %>%
+  count(smoker, age_cat, outcome) %>%
+  group_by(smoker, age_cat) %>%
+  mutate(prop.dead = n/sum(n))
 ```
 
 🧶 ✅ ⬆️ Knit, *commit, and push your changes to GitHub with an appropriate commit message. Make sure to commit and push all changed files so that your Git pane is cleared up afterwards and review the md document on GitHub to make sure you're happy with the final state of your work.*
